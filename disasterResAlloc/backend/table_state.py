@@ -11,6 +11,12 @@ class Item(rx.Base):
     date: str
     status: str
 
+class Organisation(rx.Model, table=True):
+    """NGO class"""
+    name: str
+    location: str
+    email: str
+    encoded_wallet: str
 
 class TableState(rx.State):
     """The state class."""

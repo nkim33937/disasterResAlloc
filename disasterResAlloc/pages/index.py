@@ -51,37 +51,34 @@ def index() -> rx.Component:
         The UI for the overview page.
     """
     return rx.vstack(
-        rx.heading(f"Welcome, {ProfileState.profile.name}", size="5"),
+        rx.heading(f"Welcome, Red Cross International", size="5"),
+        stats_cards(),
         rx.flex(
             rx.input(
                 rx.input.slot(rx.icon("search"), padding_left="0"),
-                placeholder="Search here...",
+                placeholder="Search Relief Organisations...",
                 size="3",
                 width="100%",
                 max_width="450px",
                 radius="large",
                 style=styles.ghost_input_style,
-            ),
-            rx.flex(
-                notification("bell", "cyan", 12),
-                notification("message-square-text", "plum", 6),
-                spacing="4",
-                width="100%",
-                wrap="nowrap",
-                justify="end",
+                # on_change=rx.
             ),
             justify="between",
             align="center",
             width="100%",
         ),
-        stats_cards(),
+                rx.button(
+            "Donate",
+            color_scheme="blue",
+            # on_click=CountState.decrement,
+        ),
         card(
             rx.hstack(
                 tab_content_header(),
                 rx.segmented_control.root(
-                    rx.segmented_control.item("Users", value="users"),
-                    rx.segmented_control.item("Revenue", value="revenue"),
-                    rx.segmented_control.item("Orders", value="orders"),
+                    rx.segmented_control.item("Balance", value="users"),
+                    rx.segmented_control.item("Donation Total", value="revenue"),
                     margin_bottom="1.5em",
                     default_value="users",
                     on_change=StatsState.set_selected_tab,
@@ -95,44 +92,6 @@ def index() -> rx.Component:
                 ("revenue", revenue_chart()),
                 ("orders", orders_chart()),
             ),
-        ),
-        rx.grid(
-            card(
-                rx.hstack(
-                    rx.hstack(
-                        rx.icon("user-round-search", size=20),
-                        rx.text("Visitors Analytics", size="4", weight="medium"),
-                        align="center",
-                        spacing="2",
-                    ),
-                    timeframe_select(),
-                    align="center",
-                    width="100%",
-                    justify="between",
-                ),
-                pie_chart(),
-            ),
-            card(
-                rx.hstack(
-                    rx.icon("globe", size=20),
-                    rx.text("Acquisition Overview", size="4", weight="medium"),
-                    align="center",
-                    spacing="2",
-                    margin_bottom="2.5em",
-                ),
-                rx.vstack(
-                    adquisition(),
-                ),
-            ),
-            gap="1rem",
-            grid_template_columns=[
-                "1fr",
-                "repeat(1, 1fr)",
-                "repeat(2, 1fr)",
-                "repeat(2, 1fr)",
-                "repeat(2, 1fr)",
-            ],
-            width="100%",
         ),
         spacing="8",
         width="100%",
