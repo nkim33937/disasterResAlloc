@@ -81,6 +81,7 @@ def sidebar_item(text: str, url: str) -> rx.Component:
                 ("About", sidebar_item_icon("book-open")),
                 ("Profile", sidebar_item_icon("user")),
                 ("Settings", sidebar_item_icon("settings")),
+                ("Wallet", sidebar_item_icon("settings")),  # Add an icon for Wallet here
                 sidebar_item_icon("layout-dashboard"),
             ),
             rx.text(text, size="3", weight="regular"),
@@ -137,6 +138,7 @@ def sidebar() -> rx.Component:
         "/about",
         "/profile",
         "/settings",
+        "/wallet",  # Add the wallet route here
     ]
 
     # Get the decorated pages.
