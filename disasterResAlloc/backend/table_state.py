@@ -1,3 +1,4 @@
+from datetime import datetime
 import reflex as rx
 from typing import Optional, Union, List
 import csv
@@ -18,6 +19,7 @@ class Organisation(rx.Model, table=True):
     location: str
     email: str
     encoded_wallet: str
+    created: datetime = datetime.now()
 
 
 class TableState(rx.State):
