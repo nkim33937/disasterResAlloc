@@ -19,8 +19,8 @@
 #         rx.text("Your wallet address will be displayed here after creation.")
 #     )
 
-import reflex as rx
-from ..states.walletState import WalletState  # Import the state
+# import reflex as rx
+# from ..states.walletState import WalletState  # Import the state
 
 #with single wallet
 # @rx.page(route="/wallet", title="Wallet")
@@ -38,22 +38,26 @@ from ..states.walletState import WalletState  # Import the state
 #     )
 
 #with multiple wallets
+import reflex as rx
+from ..states.walletState import WalletState
+
+
+
 def WalletPage() -> rx.Component:
-    """Page to generate and display XRPL wallet addresses."""
     return rx.container(
         rx.vstack(
-            rx.heading("XRPL Wallet Generator"),
+            rx.heading("XRPL Wallet Generator and Transfer"),
             rx.input(
                 placeholder="Number of wallets",
                 type="number",
                 min=1,
                 max=10,
-                value=1,
-                id="num_wallets"
+                value=WalletState.num_wallets,
+                on_change=WalletState.set_num_wallets,
             ),
             rx.button(
-                "Create Wallets", 
-                on_click=lambda: WalletState.generate_wallets(5)
+                "Generate Wallets",
+                on_click=WalletState.generate_wallets
             ),
             rx.button(
                 "Clear Wallets",
@@ -63,7 +67,40 @@ def WalletPage() -> rx.Component:
             rx.ordered_list(
                 rx.foreach(
                     WalletState.wallet_addresses,
-                    lambda address: rx.list_item(address)
+                    lambda address, index: rx.list_item(f"Wallet {index}: {address}")
+                )
+            ),
+            rx.hstack(
+                rx.input(placeholder="Sender Wallet Index", type="number", id="sender_index"),
+                rx.input(placeholder="Receiver Wallet Index", type="number", id="receiver_index"),
+                rx.input(placeholder="Amount XRP", type="number", step="0.000001", id="amount"),
+                # rx.button(
+                #     "Send XRP",
+                #     on_click=lambda: WalletState.send_xrp_between_wallets(
+                #         # int(rx.State.get("sender_index")),
+                #         # int(rx.State.get("receiver_index")),
+                #         # rx.State.get("amount")
+                        
+                #         sender_index=int(rx.State.get("sender_index")),
+                #         receiver_index=int(rx.State.get("receiver_index")),
+                #         amount=float(rx.State.get("amount"))
+                #     )
+                # )
+                rx.button(
+                    "Send XRP",
+                    # on_click=lambda: WalletState.send_xrp_between_wallets(
+                    #     sender_index=rx.Var.create("sender_index"),
+                    #     receiver_index=rx.Var.create("receiver_index"),
+                    #     amount=rx.Var.create("amount")
+                    # )
+                    on_click=lambda: WalletState.send_xrp_between_wallets(
+                        rx.Var.create("sender_index"),
+                        rx.Var.create("receiver_index"),
+                        rx.Var.create("amount")
+                        # sender_index=rx.Var.create("sender_index"),
+                        # receiver_index=rx.Var.create("receiver_index"),
+                        # amount=rx.Var.create("amount")
+                    )
                 )
             ),
             spacing="4",
@@ -75,3 +112,9 @@ def WalletPage() -> rx.Component:
         border="1px solid #ddd",
         border_radius="8px"
     )
+
+# def WalletPage():
+#     return rx.box(
+#         rx.heading("Wallet Page"),
+#         rx.text("This is a simple wallet page for testing.")
+#     )

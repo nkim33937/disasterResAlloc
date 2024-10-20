@@ -33,6 +33,7 @@ def menu_item(text: str, url: str) -> rx.Component:
                 ("About", menu_item_icon("book-open")),
                 ("Profile", menu_item_icon("user")),
                 ("Settings", menu_item_icon("settings")),
+                ("Wallet", menu_item_icon("settings")),
                 menu_item_icon("layout-dashboard"),
             ),
             rx.text(text, size="4", weight="regular"),
@@ -112,10 +113,12 @@ def menu_button() -> rx.Component:
         "/about",
         "/profile",
         "/settings",
+        "/wallet",
     ]
 
     # Get the decorated pages.
     pages = get_decorated_pages()
+    pages.append({"route": "/wallet", "title": "Wallet"})
 
     # Include all pages even if they are not in the ordered_page_routes.
     ordered_pages = sorted(
