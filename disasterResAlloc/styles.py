@@ -96,5 +96,5 @@ base_stylesheets = [
 ]
 
 base_style = {
-    "font_family": "Inter",
+    "font_family": "Lexend",
 }

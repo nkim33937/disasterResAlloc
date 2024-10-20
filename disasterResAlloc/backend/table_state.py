@@ -1,6 +1,7 @@
 from datetime import datetime
 import reflex as rx
 from typing import Optional, Union, List
+from sqlalchemy import select, String 
 import csv
 
 
@@ -113,3 +114,27 @@ class TableState(rx.State):
     def toggle_sort(self):
         self.sort_reverse = not self.sort_reverse
         self.load_entries()
+
+    # Organisation search logic 
+    search_query: str = ""
+    search_results: List[Organisation] = []
+
+    def set_search_query(self, query: str):
+        self.search_query = query 
+        self.search_organisation()
+
+    def search_organisation(self):
+        # """Search organisation table based on search query"""
+        with rx.session() as session:
+            search_value = f"%{self.search_query}%"
+            results = session.execute(
+                select(Organisation).filter(Organisation.name.ilike(search_value))
+            ).scalars().all()
+            self.search_results = results
+
+    def get_organisation_by_id(self, org_id: str) -> Organisation:
+        with rx.session() as session:
+            organisation = session.execute(
+                select(Organisation).filter(Organisation.id == org_id)
+            ).scalar_one_or_none()
+            return organisation

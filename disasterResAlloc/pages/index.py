@@ -16,6 +16,7 @@ from ..views.charts import (
 from ..views.adquisition_view import adquisition
 from ..components.notification import notification
 from ..components.card import card
+from ..backend.table_state import TableState
 from .profile import ProfileState
 import datetime
 
@@ -62,13 +63,25 @@ def index() -> rx.Component:
                 max_width="450px",
                 radius="large",
                 style=styles.ghost_input_style,
-                # on_change=rx.
+                on_change=rx.event(TableState.set_search_query),
             ),
             justify="between",
             align="center",
             width="100%",
         ),
-                rx.button(
+        rx.cond(
+            TableState.search_query != "",
+            rx.foreach(TableState.search_results, lambda org: rx.link(
+                rx.box(
+                    rx.text(f"Name: {org.name}"),
+                    rx.text(f"Location: {org.location}"),
+                    rx.text(f"Email: {org.email}")
+                    # rx.text(f"Wallet: {org.encoded_wallet}"),
+                ),
+                href=f"/organisation/[org.id]"
+            ))
+        ),
+        rx.button(
             "Donate",
             color_scheme="blue",
             # on_click=CountState.decrement,
