@@ -58,12 +58,16 @@ async def create_single_wallet(client):
     print("Full response data:", response_data)  # Debug print
 
     if response.status_code == 200:
+        
         account = response_data.get('account', {})
         print("Account data:", account)  # Debug print
 
         wallet = {
-            'classicAddress': account.get('classicAddress'),
-            'seed': account.get('secret') or account.get('seed')
+            # 'classicAddress': account.get('classicAddress'),
+            # # 'seed': account.get('secret') or account.get('seed')
+            # 'seed': account[]
+            'classicAddress': account['classicAddress'],
+            'seed': response_data['seed']
         }
         
         print("Created wallet:", wallet)  # Debug print
@@ -111,7 +115,7 @@ import asyncio
 async def main():
     wallets = await create_multiple_wallets(2)
     print("Created wallets:", wallets)
-    
+
 
 if __name__ == "__main__":
     asyncio.run(main())
