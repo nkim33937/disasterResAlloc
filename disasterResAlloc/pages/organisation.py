@@ -5,11 +5,45 @@ from disasterResAlloc import styles
 from ..templates import template
 from ..backend.routes import get_Organisation
 from ..backend.table_state import *
+from ..components.wallet import create_multiple_wallets, send_xrp
 
 class Organisations(rx.State):
     orgs: list[Organisation] = []
     selected_org: Optional[Organisation] = None
     donate_modal: bool = False # Modal state
+    async def initialize_wallet(self):
+        NGO = {}
+        try:
+            # Create a single wallet
+            wallets = await create_multiple_wallets(1)
+            if wallets and len(wallets) > 0:
+                new_wallet = wallets[0]
+                
+                # Fund the wallet with 10000 XRP
+                amount = 10000
+                result = await send_xrp(new_wallet['classicAddress'], amount)
+                
+                if result:
+                    # Update the organisation's wallet and balance in the database
+                    org_id = self.router.page.full_raw_path.split("/")[-2]
+                    with rx.session() as session:
+                        session.exec(
+                            sqlalchemy.text("UPDATE organisation SET encoded_wallet = :wallet, balance = :balance WHERE id = :id")
+                            .bindparams(wallet=new_wallet['classicAddress'], balance=amount, id=org_id)
+                        )
+                        session.commit()
+                    
+                    # Update the state
+                    NGO['encoded_wallet'] = new_wallet['classicAddress']
+                    NGO['balance'] = amount
+                    
+                    print(f"Wallet initialized with {amount} XRP: {new_wallet['classicAddress']}")
+                else:
+                    print("Failed to fund the wallet")
+            else:
+                print("Failed to create a wallet")
+        except Exception as e:
+            print(f"Error initializing wallet: {str(e)}")
 
     def get_Organisations(self):
         """Fetch all organisations from the database."""
@@ -39,6 +73,32 @@ class Organisations(rx.State):
 @rx.page(route="/organisation/[id]", title="Organisation Details")
 def organisation() -> rx.Component:
     # Conditionally render content based on the organisation state
+
+    def fetch_balance(self):
+        try:
+            org_id = self.router.page.full_raw_path.split("/")[-2]
+            with rx.session() as session:
+                result = session.exec(
+                    sqlalchemy.text("SELECT balance FROM organisation WHERE id = :id").bindparams(id=org_id),
+                )
+                ###either store in a class variable or return the value
+                print(result.scalar_one())
+                return result.scalar_one()
+        except Exception as e:
+            print(f"Error fetching balance: {str(e)}")
+
+    def update_balance(self, amount: float):
+        try:
+            org_id = self.router.page.full_raw_path.split("/")[-2]
+            with rx.session() as session:
+                result = session.exec(
+                    sqlalchemy.update("organisation").where("id" == org_id).values(balance=amount),
+                )
+                ###either store in a class variable or return the value
+                print(result.scalar_one())
+                return result.scalar_one()
+        except Exception as e:
+            print(f"Error fetching balance: {str(e)}")
 
     return rx.container(
                 rx.image(f"{Organisations.selected_org['image']}", style={"width":"2048px", "height":"60%", "overflow":"fit", "object-fit":"cover", "position":"absolute", "top":"0", "left":"0", "z-index":"-1"}),
