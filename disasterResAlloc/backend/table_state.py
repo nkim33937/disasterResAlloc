@@ -22,6 +22,7 @@ class Organisation(rx.Model, table=True):
     encoded_wallet: str
     created: datetime = datetime.now()
     updated: Optional[datetime] = None
+    seed: Optional[str] = None
 
 
 class TableState(rx.State):

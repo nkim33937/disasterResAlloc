@@ -17,7 +17,7 @@ from ..views.adquisition_view import adquisition
 from ..components.notification import notification
 from ..components.card import card
 from ..backend.table_state import TableState
-from .profile import ProfileState
+# from .profile import ProfileState
 import datetime
 
 
@@ -77,7 +77,7 @@ def index() -> rx.Component:
             TableState.search_query != "",
             rx.foreach(TableState.search_results, lambda org: rx.button(
                 rx.box(
-                    rx.text(f"{org.name}"),
+                    rx.text(f"{org.name}", color=styles.text_color, hover_color=styles.accent_text_color, style={"padding":"20px", "border-radius":"12px",":hover": {"background_color": styles.gray_bg_color}}),
                     # rx.text(f"Location: {org.location}"),
                     # rx.text(f"Email: {org.email}")
                     # rx.text(f"Wallet: {org.encoded_wallet}"),

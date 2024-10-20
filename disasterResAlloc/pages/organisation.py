@@ -1,5 +1,7 @@
 import reflex as rx
 import sqlalchemy
+
+from disasterResAlloc import styles
 from ..templates import template
 from ..backend.routes import get_Organisation
 from ..backend.table_state import *
@@ -8,17 +10,11 @@ class Organisations(rx.State):
     orgs: list[Organisation] = []
     selected_org: Optional[Organisation] = None
     donate_modal: bool = False # Modal state
-    def current_url(self) -> str:
-        print('URL', self.router.page.full_raw_path)
-        url = self.router.page.full_raw_path.split("/")
-        print('URL', url)
-        return 
 
     def get_Organisations(self):
         """Fetch all organisations from the database."""
         try:
             org_id = self.router.page.full_raw_path.split("/")[-2]
-            print('hi my', org_id)
             with rx.session() as session:
                 result = session.exec(
                     sqlalchemy.text("SELECT * FROM organisation WHERE id = :id").bindparams(id=org_id),
@@ -45,9 +41,17 @@ def organisation() -> rx.Component:
     # Conditionally render content based on the organisation state
 
     return rx.container(rx.container(
+        rx.image(f"{Organisations.selected_org['image']}", style={"width":"100%", "height":"auto"}),
         rx.text('Organisation Details', style={"font-size": "24px", "font-weight": "bold", 'text_align': "center", 'padding': '20px'}),
-        rx.text(f"{Organisations.selected_org['name']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
-        rx.text(f"Location: {Organisations.selected_org['location']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
+        rx.text(f"{Organisations.selected_org['name']}", style={"padding": "10px", "text-align": "center", "font-size": "20px", "font-weight": "bold"}),  # Display the wallet address from state
+        rx.text(f"{Organisations.selected_org['disaster']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
+        rx.flex(rx.icon('map-pin', size=20),
+        rx.text(f"{Organisations.selected_org['location']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
+        align="center",
+        gap="2",
+        justify="center",
+        ),
+        rx.text(f"{Organisations.selected_org['cause']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
         rx.container(
         rx.dialog.root(
             rx.center(
@@ -60,16 +64,17 @@ def organisation() -> rx.Component:
                 ),),
                 rx.dialog.content(
                     rx.dialog.title(
-                        "Donate XRP!",
+                        "Donate XRP: Current Balance: {}",
                     ),
                     rx.dialog.description(
                         "How much would you like to donate?",
-                    style={"padding": "10px"}),
+                    style={"padding-bottom": "10px"}),
                     rx.form(
                         rx.flex(
                             rx.input(
                                 placeholder="$0",
                                 name="Amount",
+                                padding="10px",
                             ),
                             rx.flex(
                                 rx.dialog.close(
@@ -107,5 +112,5 @@ def organisation() -> rx.Component:
         # border="1px solid #ddd",
         border_radius="8px",
     ),        
-    rx.button('Back', on_click=rx.redirect("/"), style={"font-size": "18px", "right": "30px", "bottom": "30px", "position": "absolute", "padding": "10px", "border-radius": "5px", "background-color": "red", "color": "white"}),            
+    rx.icon('arrow-left', size=50, on_click=rx.redirect("/"), style={"left": "30px", "top": "30px", "position": "absolute", "padding": "10px","border-radius": "12px", "background-color": "Transparent", "color": styles.text_color, "cursor": "pointer", ":hover": {"color": styles.accent_text_color, "background-color": styles.gray_bg_color}}),            
     )
