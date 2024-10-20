@@ -109,7 +109,13 @@ def index() -> rx.Component:
                     # rx.text(f"Wallet: {org.encoded_wallet}"),
                 ),
                 on_click=rx.redirect(f"/organisation/{org.id}"),
-                style=[styles.ghost_button_style],
+                style=[styles.ghost_button_style, {
+                "animation": "slide-down 0.5s ease-out",
+                "@keyframes slide-down": {
+                    "from": {"transform": "translateY(-20px)", "opacity": "0"},
+                    "to": {"transform": "translateY(0)", "opacity": "1"},
+                },
+            }],
             )),
         ),
         card(
