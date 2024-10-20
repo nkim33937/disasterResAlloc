@@ -1,12 +1,19 @@
 # my_xrpl_wallet_app/pages/wallet.py
 import reflex as rx
-import xrpl
 from xrpl.wallet import generate_faucet_wallet
+import httpx  # An async HTTP client
+
+FAUCET_URL = "https://faucet.altnet.rippletest.net/accounts"
 
 async def create_wallet():
-    client = xrpl.clients.JsonRpcClient("https://s.altnet.rippletest.net:51234")
-    
-    # Create a new wallet asynchronously
-    wallet = await generate_faucet_wallet(client)  # Use await instead of asyncio.run()
-    print("Wallet created:", wallet)  # Optional: print to console
-    return wallet.classic_address
+    """Create an XRPL wallet using a direct faucet API call."""
+    async with httpx.AsyncClient() as client:
+        response = await client.post(FAUCET_URL)
+        response_data = response.json()
+
+        if response.status_code == 200:
+            wallet_address = response_data["account"]["classicAddress"]
+            print(f"Wallet created: {wallet_address}")
+            return wallet_address
+        else:
+            raise Exception("Failed to create wallet: ", response_data)
