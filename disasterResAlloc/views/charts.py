@@ -1,6 +1,7 @@
 import reflex as rx
 import random
 import datetime
+from typing import List, Dict, Any
 from reflex.components.radix.themes.base import (
     LiteralAccentColor,
 )
@@ -10,71 +11,91 @@ class StatsState(rx.State):
     area_toggle: bool = True
     selected_tab: str = "donation"
     timeframe: str = "Monthly"
-    users_data = []
-    revenue_data = []
-    orders_data = []
-    device_data = []
-    yearly_device_data = []
-    donation_data = [
-        {"Date": "10-01", "Donation": 100},
-        {"Date": "10-05", "Donation": 500},
-        {"Date": "10-10", "Donation": 800},
-        {"Date": "10-15", "Donation": 200},
-        {"Date": "10-20", "Donation": 400},
-        {"Date": "10-25", "Donation": 300},
-    ]
+    users_data: List[Dict[str, Any]] = []
+    revenue_data: List[Dict[str, Any]] = []
+    orders_data: List[Dict[str, Any]] = []
+    device_data: List[Dict[str, Any]] = []
+    yearly_device_data: List[Dict[str, Any]] = []
+    donation_data: List[Dict[str, Any]] = []
+    all_org_donation_data: Dict[str, List[Dict[str, Any]]] = {}
 
     def toggle_areachart(self):
         self.area_toggle = not self.area_toggle
 
     def randomize_data(self):
+        from ..backend.table_state import TableState
+        for org in TableState.organisations:
+            self.all_org_donation_data[org.id] = generate_dummy_donation_data()
         # If data is already populated, don't randomize
-        if self.users_data:
-            return
+        # if self.donation_data:
+        #     return
+        
+        # self.donation_data = []
+        # for i in range(30, -1, -1):  # Include today's data
+        #     self.revenue_data.append(
+        #         {
+        #             "Date": (
+        #                 datetime.datetime.now() - datetime.timedelta(days=i)
+        #             ).strftime("%m-%d"),
+        #             "Revenue": random.randint(1000, 5000),
+        #         }
+        #     )
+        # print("Randomized donation data:", self.donation_data)
+        # for i in range(30, -1, -1):
+        #     self.orders_data.append(
+        #         {
+        #             "Date": (
+        #                 datetime.datetime.now() - datetime.timedelta(days=i)
+        #             ).strftime("%m-%d"),
+        #             "Orders": random.randint(100, 500),
+        #         }
+        #     )
 
-        for i in range(30, -1, -1):  # Include today's data
-            self.revenue_data.append(
-                {
-                    "Date": (
-                        datetime.datetime.now() - datetime.timedelta(days=i)
-                    ).strftime("%m-%d"),
-                    "Revenue": random.randint(1000, 5000),
-                }
-            )
-        for i in range(30, -1, -1):
-            self.orders_data.append(
-                {
-                    "Date": (
-                        datetime.datetime.now() - datetime.timedelta(days=i)
-                    ).strftime("%m-%d"),
-                    "Orders": random.randint(100, 500),
-                }
-            )
+        # for i in range(30, -1, -1):
+        #     self.users_data.append(
+        #         {
+        #             "Date": (
+        #                 datetime.datetime.now() - datetime.timedelta(days=i)
+        #             ).strftime("%m-%d"),
+        #             "Users": random.randint(100, 500),
+        #         }
+        #     )
 
-        for i in range(30, -1, -1):
-            self.users_data.append(
-                {
-                    "Date": (
-                        datetime.datetime.now() - datetime.timedelta(days=i)
-                    ).strftime("%m-%d"),
-                    "Users": random.randint(100, 500),
-                }
-            )
+        # self.device_data = [
+        #     {"name": "Desktop", "value": 23, "fill": "var(--blue-8)"},
+        #     {"name": "Mobile", "value": 47, "fill": "var(--green-8)"},
+        #     {"name": "Tablet", "value": 25, "fill": "var(--purple-8)"},
+        #     {"name": "Other", "value": 5, "fill": "var(--red-8)"},
+        # ]
 
-        self.device_data = [
-            {"name": "Desktop", "value": 23, "fill": "var(--blue-8)"},
-            {"name": "Mobile", "value": 47, "fill": "var(--green-8)"},
-            {"name": "Tablet", "value": 25, "fill": "var(--purple-8)"},
-            {"name": "Other", "value": 5, "fill": "var(--red-8)"},
-        ]
+        # self.yearly_device_data = [
+        #     {"name": "Desktop", "value": 34, "fill": "var(--blue-8)"},
+        #     {"name": "Mobile", "value": 46, "fill": "var(--green-8)"},
+        #     {"name": "Tablet", "value": 21, "fill": "var(--purple-8)"},
+        #     {"name": "Other", "value": 9, "fill": "var(--red-8)"},
+        # ]
 
-        self.yearly_device_data = [
-            {"name": "Desktop", "value": 34, "fill": "var(--blue-8)"},
-            {"name": "Mobile", "value": 46, "fill": "var(--green-8)"},
-            {"name": "Tablet", "value": 21, "fill": "var(--purple-8)"},
-            {"name": "Other", "value": 9, "fill": "var(--red-8)"},
-        ]
+    def get_total_donations(self) -> List[Dict[str, Any]]:
+        total_donations = {}
+        for org_data in self.all_org_donation_data.values():
+            for donation in org_data:
+                date = donation["Date"]
+                amount = donation["Donations"]
+                #existing = next((item for item in total_donations if item["Date"] == date), None)
+                if date in total_donations: 
+                    total_donations[date] += amount
+                else:
+                    total_donations[date] = amount
+        return [{"Date": date, "Donations": amount} for date, amount in sorted(total_donations.items())]
 
+    def toggle_areachart(self):
+        self.area_toggle = not self.area_toggle
+
+    def set_selected_tab(self, tab: str):
+        self.selected_tab = tab
+
+    def set_timeframe(self, timeframe: str):
+        self.timeframe = timeframe
 
 def area_toggle() -> rx.Component:
     return rx.cond(
@@ -210,12 +231,22 @@ def revenue_chart() -> rx.Component:
         ),
     )
 
-def donation_history_chart() -> rx.Component:
-    # if not donation_data:
-    #     donation_data = [
-    #         {"Date": (datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%m-%d"), "Donation": 0}
-    #         for i in range(30, -1, -1)
-    #     ]
+def generate_dummy_donation_data(num_transactions=10) -> List[Dict[str, Any]]:
+    donation_data = []
+    for _ in range(num_transactions):
+        date = (datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 30))).strftime("%m-%d")
+        amount = random.randint(10, 1000)
+        donation_data.append({"Date": date, "Donations": amount})
+    return sorted(donation_data, key=lambda x: x["Date"])
+
+def donation_history_chart(donation_data_func) -> rx.Component:
+    @rx.var
+    def get_data():
+        if callable(donation_data_func):
+            return donation_data_func()
+        return donation_data_func
+    
+    chart_data = rx.Var.create(get_data)
 
     return rx.cond(
         StatsState.area_toggle,
@@ -224,7 +255,7 @@ def donation_history_chart() -> rx.Component:
             _custom_tooltip("green"),
             rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
             rx.recharts.area(
-                data_key="Donation",
+                data_key="Donations",
                 stroke=rx.color("green", 9),
                 fill="url(#colorGreen)",
                 type_="monotone",
@@ -232,8 +263,9 @@ def donation_history_chart() -> rx.Component:
             rx.recharts.x_axis(data_key="Date", scale="auto"),
             rx.recharts.y_axis(),
             rx.recharts.legend(),
-            data=StatsState.donation_data,
+            data=chart_data,
             height=425,
+            width="100%",
         ),
         rx.recharts.bar_chart(
             _custom_tooltip("green"),
@@ -246,8 +278,9 @@ def donation_history_chart() -> rx.Component:
             rx.recharts.x_axis(data_key="Date", scale="auto"),
             rx.recharts.y_axis(),
             rx.recharts.legend(),
-            data=StatsState.donation_data,
+            data=chart_data,
             height=425,
+            width="100%",
         ),
     )
 

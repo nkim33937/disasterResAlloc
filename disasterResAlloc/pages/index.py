@@ -126,7 +126,11 @@ def index() -> rx.Component:
             ),
             rx.cond(
                 StatsState.selected_tab == "donation",
-                donation_history_chart(),
+                rx.box( 
+                    donation_history_chart(StatsState.get_total_donations),
+                    width="100%",
+                ),
+                #donation_history_chart(),
                 #("donation", donation_history_chart()),
                 #("revenue", revenue_chart()),
                 rx.text("Select 'Donation Total' to view the chart"),
