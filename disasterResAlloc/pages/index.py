@@ -33,6 +33,10 @@ def _time_data() -> rx.Component:
         display=["none", "none", "flex"],
     )
 
+def special_events_example():
+    return rx.button(
+        "Alert", on_click=rx.window_alert("Hello World!")
+    )
 
 def tab_content_header() -> rx.Component:
     return rx.hstack(
@@ -71,20 +75,16 @@ def index() -> rx.Component:
         ),
         rx.cond(
             TableState.search_query != "",
-            rx.foreach(TableState.search_results, lambda org: rx.link(
+            rx.foreach(TableState.search_results, lambda org: rx.button(
                 rx.box(
-                    rx.text(f"Name: {org.name}"),
-                    rx.text(f"Location: {org.location}"),
-                    rx.text(f"Email: {org.email}")
+                    rx.text(f"{org.name}"),
+                    # rx.text(f"Location: {org.location}"),
+                    # rx.text(f"Email: {org.email}")
                     # rx.text(f"Wallet: {org.encoded_wallet}"),
                 ),
-                href=f"/organisation/[org.id]"
-            ))
-        ),
-        rx.button(
-            "Donate",
-            color_scheme="blue",
-            # on_click=CountState.decrement,
+                on_click=rx.redirect(f"/organisation/{org.id}"),
+                style=[styles.ghost_button_style],
+            )),
         ),
         card(
             rx.hstack(

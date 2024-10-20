@@ -26,7 +26,6 @@ class Organisation(rx.Model, table=True):
 
 class TableState(rx.State):
     """The state class."""
-
     items: List[Item] = []
 
     search_value: str = ""
@@ -132,9 +131,17 @@ class TableState(rx.State):
             ).scalars().all()
             self.search_results = results
 
-    def get_organisation_by_id(self, org_id: str) -> Organisation:
-        with rx.session() as session:
-            organisation = session.execute(
-                select(Organisation).filter(Organisation.id == org_id)
-            ).scalar_one_or_none()
-            return organisation
+    async def get_organisation_by_id(self, org_id: str):
+        """Fetch an organisation by its ID."""
+        try:
+            async with rx.session() as session:
+                organisation = await session.exec(
+                    select(Organisation).filter(Organisation.id == org_id)
+                ).scalar_one_or_none()
+                self.organisation = organisation  # Store result in state
+        except Exception as e:
+            self.error_message = f"Error: {str(e)}"
+
+    async def on_load(self):
+        """Fetch the organisation when the page loads."""
+        await self.get_organisation_by_id(rx.State.id)
