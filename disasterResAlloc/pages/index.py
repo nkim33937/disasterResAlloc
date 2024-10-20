@@ -56,7 +56,23 @@ def index() -> rx.Component:
         The UI for the overview page.
     """
     return rx.vstack(
-        rx.heading(f"Welcome, Red Cross International", size="5"),
+        rx.heading(f"Welcome, Organization", size="5", style={ 
+                "width": "20%",    
+                "animation": "typing 1.5s steps(40, end), blink-caret .75s step-end infinite",
+                "animation-fill-mode": "forwards",
+                "white-space": "nowrap",
+                "overflow": "hidden",
+                "@keyframes typing": {
+                    "from": { "width": "0" },
+                    "to": { "width": "23%" }
+                },
+                # "@keyframes blink-caret": {
+                #     "from": { "border-right": ".15em solid grey" },
+                #     "50%": { "border-right": "transparent" },
+                #     "to": { "border-right": "none" }
+
+                # }
+                }),
         stats_cards(),
         rx.flex(
             rx.input(
