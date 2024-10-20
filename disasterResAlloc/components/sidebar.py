@@ -80,6 +80,7 @@ def sidebar_item(text: str, url: str) -> rx.Component:
                 ("Wallet", sidebar_item_icon("table-2")),
                 ("About", sidebar_item_icon("book-open")),
                 ("Profile", sidebar_item_icon("user")),
+                ("Organisations", sidebar_item_icon("users")),
                 ("Settings", sidebar_item_icon("settings")),
                 ("Wallet", sidebar_item_icon("settings")),  # Add an icon for Wallet here
                 sidebar_item_icon("layout-dashboard"),

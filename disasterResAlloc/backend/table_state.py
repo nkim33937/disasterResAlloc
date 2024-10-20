@@ -1,5 +1,7 @@
+from datetime import datetime
 import reflex as rx
-from typing import Union, List
+from typing import Optional, Union, List
+from sqlalchemy import select, String 
 import csv
 
 
@@ -11,16 +13,20 @@ class Item(rx.Base):
     date: str
     status: str
 
+
 class Organisation(rx.Model, table=True):
     """NGO class"""
     name: str
     location: str
     email: str
     encoded_wallet: str
+    created: datetime = datetime.now()
+    updated: Optional[datetime] = None
+    seed: Optional[str] = None
+
 
 class TableState(rx.State):
     """The state class."""
-
     items: List[Item] = []
 
     search_value: str = ""
@@ -108,3 +114,35 @@ class TableState(rx.State):
     def toggle_sort(self):
         self.sort_reverse = not self.sort_reverse
         self.load_entries()
+
+    # Organisation search logic 
+    search_query: str = ""
+    search_results: List[Organisation] = []
+
+    def set_search_query(self, query: str):
+        self.search_query = query 
+        self.search_organisation()
+
+    def search_organisation(self):
+        # """Search organisation table based on search query"""
+        with rx.session() as session:
+            search_value = f"%{self.search_query}%"
+            results = session.execute(
+                select(Organisation).filter(Organisation.name.ilike(search_value))
+            ).scalars().all()
+            self.search_results = results
+
+    async def get_organisation_by_id(self, org_id: str):
+        """Fetch an organisation by its ID."""
+        try:
+            async with rx.session() as session:
+                organisation = await session.exec(
+                    select(Organisation).filter(Organisation.id == org_id)
+                ).scalar_one_or_none()
+                self.organisation = organisation  # Store result in state
+        except Exception as e:
+            self.error_message = f"Error: {str(e)}"
+
+    async def on_load(self):
+        """Fetch the organisation when the page loads."""
+        await self.get_organisation_by_id(rx.State.id)

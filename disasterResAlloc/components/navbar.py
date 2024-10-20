@@ -1,6 +1,7 @@
 """Navbar component for the app."""
 
 from disasterResAlloc import styles
+from PIL import Image
 
 import reflex as rx
 
@@ -178,13 +179,18 @@ def navbar() -> rx.Component:
     Returns:
         The navbar component.
     """
+    class ImageState(rx.State):
+        image = Image.open('assets/calhacks.png')
 
+
+    def image_pil_example():
+        return rx.vstack(rx.image(src=ImageState.image, height="2em"))  
     return rx.el.nav(
         rx.hstack(
             # The logo.
             rx.color_mode_cond(
                 rx.image(src="/reflex_black.svg", height="1em"),
-                rx.image(src="/reflex_white.svg", height="1em"),
+                image_pil_example(),
             ),
             rx.spacer(),
             menu_button(),

@@ -74,6 +74,18 @@ ghost_input_style = {
     "color": "",
 }
 
+ghost_button_style = {
+    "background_color": "transparent",
+    "color": "",
+    "border": "none",
+    "cursor": "pointer",
+    "padding": "100",
+    ":hover": { 
+        "background_color":"rgba(255, 255, 255, 0.3)",
+        ""
+        "color": accent_text_color,
+    },
+}
 box_shadow_style = "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
 
 color_picker_style = {

@@ -12,11 +12,13 @@ from ..views.charts import (
     pie_chart,
     timeframe_select,
     StatsState,
+    donation_history_chart,
 )
 from ..views.adquisition_view import adquisition
 from ..components.notification import notification
 from ..components.card import card
-from .profile import ProfileState
+from ..backend.table_state import TableState
+# from .profile import ProfileState
 import datetime
 
 
@@ -32,6 +34,10 @@ def _time_data() -> rx.Component:
         display=["none", "none", "flex"],
     )
 
+def special_events_example():
+    return rx.button(
+        "Alert", on_click=rx.window_alert("Hello World!")
+    )
 
 def tab_content_header() -> rx.Component:
     return rx.hstack(
@@ -50,6 +56,15 @@ def index() -> rx.Component:
     Returns:
         The UI for the overview page.
     """
+    # donation_data = [
+    #     {"Date": "10-01", "Donation": 100},
+    #     {"Date": "10-05", "Donation": 500},
+    #     {"Date": "10-10", "Donation": 800},
+    #     {"Date": "10-15", "Donation": 200},
+    #     {"Date": "10-20", "Donation": 400},
+    #     {"Date": "10-25", "Donation": 300},
+    # ]
+
     return rx.vstack(
         rx.heading(f"Welcome, Red Cross International", size="5"),
         stats_cards(),
@@ -62,35 +77,43 @@ def index() -> rx.Component:
                 max_width="450px",
                 radius="large",
                 style=styles.ghost_input_style,
-                # on_change=rx.
+                on_change=rx.event(TableState.set_search_query),
             ),
             justify="between",
             align="center",
             width="100%",
         ),
-                rx.button(
-            "Donate",
-            color_scheme="blue",
-            # on_click=CountState.decrement,
+        rx.cond(
+            TableState.search_query != "",
+            rx.foreach(TableState.search_results, lambda org: rx.button(
+                rx.box(
+                    rx.text(f"{org.name}", color=styles.text_color, hover_color=styles.accent_text_color, style={"padding":"20px", "border-radius":"12px",":hover": {"background_color": styles.gray_bg_color}}),
+                    # rx.text(f"Location: {org.location}"),
+                    # rx.text(f"Email: {org.email}")
+                    # rx.text(f"Wallet: {org.encoded_wallet}"),
+                ),
+                on_click=rx.redirect(f"/organisation/{org.id}"),
+                style=[styles.ghost_button_style],
+            )),
         ),
         card(
             rx.hstack(
                 tab_content_header(),
                 rx.segmented_control.root(
-                    rx.segmented_control.item("Balance", value="users"),
-                    rx.segmented_control.item("Donation Total", value="revenue"),
+                    rx.segmented_control.item("Donation Total", value="donation"),
                     margin_bottom="1.5em",
-                    default_value="users",
+                    default_value="donation",
                     on_change=StatsState.set_selected_tab,
                 ),
                 width="100%",
                 justify="between",
             ),
-            rx.match(
-                StatsState.selected_tab,
-                ("users", users_chart()),
-                ("revenue", revenue_chart()),
-                ("orders", orders_chart()),
+            rx.cond(
+                StatsState.selected_tab == "donation",
+                donation_history_chart(),
+                #("donation", donation_history_chart()),
+                #("revenue", revenue_chart()),
+                rx.text("Select 'Donation Total' to view the chart"),
             ),
         ),
         spacing="8",
