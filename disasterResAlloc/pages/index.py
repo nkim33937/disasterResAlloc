@@ -12,6 +12,7 @@ from ..views.charts import (
     pie_chart,
     timeframe_select,
     StatsState,
+    donation_history_chart,
 )
 from ..views.adquisition_view import adquisition
 from ..components.notification import notification
@@ -55,6 +56,15 @@ def index() -> rx.Component:
     Returns:
         The UI for the overview page.
     """
+    # donation_data = [
+    #     {"Date": "10-01", "Donation": 100},
+    #     {"Date": "10-05", "Donation": 500},
+    #     {"Date": "10-10", "Donation": 800},
+    #     {"Date": "10-15", "Donation": 200},
+    #     {"Date": "10-20", "Donation": 400},
+    #     {"Date": "10-25", "Donation": 300},
+    # ]
+
     return rx.vstack(
         rx.heading(f"Welcome, Red Cross International", size="5"),
         stats_cards(),
@@ -90,17 +100,20 @@ def index() -> rx.Component:
             rx.hstack(
                 tab_content_header(),
                 rx.segmented_control.root(
-                    rx.segmented_control.item("Donation Total", value="revenue"),
+                    rx.segmented_control.item("Donation Total", value="donation"),
                     margin_bottom="1.5em",
-                    default_value="users",
+                    default_value="donation",
                     on_change=StatsState.set_selected_tab,
                 ),
                 width="100%",
                 justify="between",
             ),
-            rx.match(
-                StatsState.selected_tab,
-                ("revenue", revenue_chart()),
+            rx.cond(
+                StatsState.selected_tab == "donation",
+                donation_history_chart(),
+                #("donation", donation_history_chart()),
+                #("revenue", revenue_chart()),
+                rx.text("Select 'Donation Total' to view the chart"),
             ),
         ),
         spacing="8",
