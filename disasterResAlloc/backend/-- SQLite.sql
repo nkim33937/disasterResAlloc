@@ -1,0 +1,24 @@
+-- SQLite
+-- Step 1: Delete all existing data
+DELETE FROM organisation;
+
+-- Step 3: Insert new data with IDs from 0 to 9
+INSERT INTO organisation (id, name, location, email, encoded_wallet, created, updated, seed, cause, disaster, image, balance)
+VALUES 
+(0, 'International Red Cross Honduras', 'Honduras', '', 'rM9PyNnSe5CGfjEY6t8VgF4TiVoVHmpnNW', '2024-10-19 17:10:13.441232', NULL, NULL, 'The International Red Cross in Honduras focuses on vector control and community health education to combat the spread of dengue. It also provides medical supplies and supports overwhelmed healthcare facilities.', 'Dengue Outbreak', 'https://www.icrc.org/sites/default/files/styles/desktop_full/public/document_new/image_plus_list/portada_honduras.jpg.webp?itok=1rRdfkzZ', 0),
+
+(1, 'Palestine Children''s Relief Fund', 'Gaza', 'amnestygaza@gmail.com', 'rpquhZW7Qcwgnsuhgh96s8UnSkzuycL1Ls', '2024-10-19 17:10:13.441232', NULL, NULL, 'PCRF specializes in offering medical care to children and families affected by the ongoing crisis. The organization focuses on providing urgent medical supplies, clean water, food, and long-term mental health support. PCRF also manages programs to help children in Gaza access specialized surgeries and healthcare unavailable locally.', 'Genocide', 'https://i.ytimg.com/vi/5-C1YnFQPOg/maxresdefault.jpg', 0),
+
+(2, 'National Unit for Disaster Risk Management', 'Colombia', 'n/a', 'rKSV8SdzMYN2unLDdV8prmaDwgi6Qpcaho', '2024-10-20 10:11:17', NULL, 'n/a', 'The National Unit for Disaster Risk Management (UNGRD) in Colombia coordinates evacuation plans and monitors volcanic activity to protect residents. It collaborates with the Geological Service of Colombia for early warning systems.', 'Puracé Volcano', 'https://i0.wp.com/www.thenonmad.com/wp-content/uploads/2018/03/Purace-31.jpg?fit=1600%2C1200&ssl=1', 0),
+
+(3, 'Armenian Red Cross Society', 'Armenia', 'n/a', 'ra4D3C4jHpoFkuxcrDFMWdb8agWeYrxKya', '2024-10-20 10:11:17', NULL, 'n/a', 'The Armenian Red Cross Society provides flood victims with essential supplies such as food, water, and shelter. It also runs community preparedness programs to mitigate future flood risks.', 'Flash Floods', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyaeKFZag0kKt9FeLYtB7m0zBsQIKToW419w&s', 0),
+
+(4, 'BRAC', 'Bangladesh', 'n/a', 'rGJhZtWni3Qz2gsiv4S26mJzbswWGLJe9o', '2024-10-20 10:11:17', NULL, 'n/a', 'BRAC supports displaced families by providing emergency shelters, food packages, and healthcare during tropical cyclones. They also run long-term recovery programs focused on rebuilding livelihoods.', 'Tropical Cyclone Remal', 'https://www.economist.com/img/b/1280/720/90/sites/default/files/images/2019/09/articles/main/20190907_irp003.jpg', 0),
+
+(5, 'Bangladesh Red Crescent Society', 'Bangladesh', 'n/a', 'rhaTCwALyM1iyAARNVNFgxWNvdmFVMSFNg', '2024-10-20 10:11:17', NULL, 'n/a', 'The Bangladesh Red Crescent Society offers medical assistance and disaster relief to cyclone-affected areas. It helps set up mobile clinics and works on restoring clean water supplies.', 'Tropical Cyclone Remal', 'https://redcross.eu/uploads/files/Latest%20News/EUAV%20Interview%20with%20Margherita/IMG_4.JPG', 0),
+
+(6, 'UN World Food Programme', 'Southern Africa', 'n/a', 'rQpNWAbZhKbAkrBtog5qMwvQojiv2XGUNF', '2024-10-20 10:11:17', NULL, 'n/a', 'The UN World Food Programme (WFP) addresses food insecurity caused by drought, distributing emergency food supplies and running nutrition programs to combat malnutrition.', 'Drought', 'https://www.wfp.org/sites/default/files/2024-03/WF121663_UGA_20200707_WFP-Hugh_Rutherford_5079.jpg', 0),
+
+(7, 'Red Cross Botswana', 'Botswana', 'n/a', 'rJbZQ8KjWgrp8Pf32PofRmoqg6Lm76xG87', '2024-10-20 10:11:17', NULL, 'n/a', 'The Red Cross in Botswana provides drought-affected communities with water, food, and hygiene supplies. It also supports farmers with sustainable agricultural practices to build long-term resilience.', 'Drought', 'https://www.botswanaredcross.org.bw/images/2022/09/19/disaster-management.jpg', 0),
+
+(8, 'Care International', 'Papua New Guinea', 'n/a', 'rniWcikeHyzkUbHvHVqnNrTEw7XJK21bSa', '2024-10-20 10:11:17', NULL, 'n/a', 'Care International provides emergency assistance to communities affected by landslides and floods, including shelter, clean water, and sanitation. They also work on disaster preparedness and climate resilience programs.', 'Landslides and Floods', 'https://www.care-international.org/sites/default/files/styles/og_image/public/2022-04/Papua%20New%20Guinea_Classroom%20teaching_RS47722_180725_PNG_PKS_StTheresaES_JH_560.jpg?h=8d256a69&itok=_PgYSfHl', 0);

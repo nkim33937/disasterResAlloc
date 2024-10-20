@@ -77,11 +77,12 @@ def sidebar_item(text: str, url: str) -> rx.Component:
             rx.match(
                 text,
                 ("Overview", sidebar_item_icon("home")),
-                ("Table", sidebar_item_icon("table-2")),
+                ("Wallet", sidebar_item_icon("table-2")),
                 ("About", sidebar_item_icon("book-open")),
                 ("Profile", sidebar_item_icon("user")),
                 ("Organisations", sidebar_item_icon("users")),
                 ("Settings", sidebar_item_icon("settings")),
+                ("Wallet", sidebar_item_icon("settings")),  # Add an icon for Wallet here
                 sidebar_item_icon("layout-dashboard"),
             ),
             rx.text(text, size="3", weight="regular"),
@@ -134,14 +135,16 @@ def sidebar() -> rx.Component:
     # The ordered page routes.
     ordered_page_routes = [
         "/",
-        "/table",
+        "/wallet",
         "/about",
         "/profile",
         "/settings",
+        "/wallet",  # Add the wallet route here
     ]
 
     # Get the decorated pages.
     pages = get_decorated_pages()
+    pages.append({"route": "/wallet", "title": "Wallet"})
 
     # Include all pages even if they are not in the ordered_page_routes.
     ordered_pages = sorted(
