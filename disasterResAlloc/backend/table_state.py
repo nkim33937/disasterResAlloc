@@ -20,6 +20,7 @@ class Organisation(rx.Model, table=True):
     email: str
     encoded_wallet: str
     created: datetime = datetime.now()
+    updated: Optional[datetime] = None
 
 
 class TableState(rx.State):
