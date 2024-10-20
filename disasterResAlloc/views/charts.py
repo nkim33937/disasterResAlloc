@@ -220,13 +220,13 @@ def donation_history_chart() -> rx.Component:
     return rx.cond(
         StatsState.area_toggle,
         rx.recharts.area_chart(
-            _create_gradient("orange", "colorOrange"),
-            _custom_tooltip("orange"),
+            _create_gradient("green", "colorGreen"),
+            _custom_tooltip("green"),
             rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
             rx.recharts.area(
                 data_key="Donation",
-                stroke=rx.color("orange", 9),
-                fill="url(#colorOrange)",
+                stroke=rx.color("green", 9),
+                fill="url(#colorGreen)",
                 type_="monotone",
             ),
             rx.recharts.x_axis(data_key="Date", scale="auto"),
@@ -236,12 +236,12 @@ def donation_history_chart() -> rx.Component:
             height=425,
         ),
         rx.recharts.bar_chart(
-            _custom_tooltip("orange"),
+            _custom_tooltip("green"),
             rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
             rx.recharts.bar(
-                data_key="Donation",
-                stroke=rx.color("orange", 9),
-                fill=rx.color("orange", 7),
+                data_key="Donations",
+                stroke=rx.color("green", 9),
+                fill=rx.color("green", 7),
             ),
             rx.recharts.x_axis(data_key="Date", scale="auto"),
             rx.recharts.y_axis(),
