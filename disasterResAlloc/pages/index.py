@@ -77,7 +77,6 @@ def index() -> rx.Component:
             rx.hstack(
                 tab_content_header(),
                 rx.segmented_control.root(
-                    rx.segmented_control.item("Balance", value="users"),
                     rx.segmented_control.item("Donation Total", value="revenue"),
                     margin_bottom="1.5em",
                     default_value="users",
@@ -88,9 +87,7 @@ def index() -> rx.Component:
             ),
             rx.match(
                 StatsState.selected_tab,
-                ("users", users_chart()),
                 ("revenue", revenue_chart()),
-                ("orders", orders_chart()),
             ),
         ),
         spacing="8",
