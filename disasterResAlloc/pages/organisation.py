@@ -11,8 +11,9 @@ class Organisations(rx.State):
     orgs: list[Organisation] = []
     selected_org: Optional[Organisation] = None
     donate_modal: bool = False # Modal state
+    NGO = {}
     async def initialize_wallet(self):
-        NGO = {}
+        
         try:
             # Create a single wallet
             wallets = await create_multiple_wallets(1)
@@ -34,8 +35,8 @@ class Organisations(rx.State):
                         session.commit()
                     
                     # Update the state
-                    NGO['encoded_wallet'] = new_wallet['classicAddress']
-                    NGO['balance'] = amount
+                    self.NGO['encoded_wallet'] = new_wallet['classicAddress']
+                    self.NGO['balance'] = amount
                     
                     print(f"Wallet initialized with {amount} XRP: {new_wallet['classicAddress']}")
                 else:
@@ -68,11 +69,38 @@ class Organisations(rx.State):
         """Close the donate modal by setting the state to False."""
         self.donate_modal = False
     
-    def donate(self, amount: float):
+    def donate(self, form_data: dict):
+        amount = float(form_data.get("Amount", 0))
+        ngo_balance = self.NGO.get('balance', 10000)  # Use .get() with a default value
+
+        if amount <= 0 or amount > ngo_balance:
+            return
+
+        recipient = self.selected_org['encoded_wallet'] if self.selected_org else ""
+        result = send_xrp(self.NGO.get('encoded_wallet', ''), recipient, amount)
+
+
+        if result:
+            self.NGO['balance'] = self.NGO['balance'] - amount
+            org_id = self.router.page.full_raw_path.split("/")[-2]
+            with rx.session() as session:
+                org = session.exec(sqlalchemy.select(Organisation).where(Organisation.id == org_id)).one()
+                org.balance += amount
+                session.commit()
+            
+            if self.selected_org:
+                self.selected_org['balance'] += amount
+
+        
+        self.close_donate_modal()
+        
+
+        
+        
+        
+        
+
         pass
-@rx.page(route="/organisation/[id]", title="Organisation Details")
-def organisation() -> rx.Component:
-    # Conditionally render content based on the organisation state
 
     def fetch_balance(self):
         try:
@@ -99,6 +127,9 @@ def organisation() -> rx.Component:
                 return result.scalar_one()
         except Exception as e:
             print(f"Error fetching balance: {str(e)}")
+@rx.page(route="/organisation/[id]", title="Organisation Details")
+def organisation() -> rx.Component:
+    # Conditionally render content based on the organisation state
 
     return rx.container(
                 rx.image(f"{Organisations.selected_org['image']}", style={"width":"2048px", "height":"60%", "overflow":"fit", "object-fit":"cover", "position":"absolute", "top":"0", "left":"0", "z-index":"-1"}),
@@ -113,6 +144,7 @@ def organisation() -> rx.Component:
         justify="center",
         ),
         rx.text(f"{Organisations.selected_org['cause']}", style={"padding": "10px", "text-align": "center"}),  # Display the wallet address from state
+        rx.text(f"NGO Balance: {Organisations.NGO['balance']} XRP", style={"padding": "10px", "text-align": "center"}),
         rx.container(
         rx.dialog.root(
             rx.center(
@@ -125,7 +157,8 @@ def organisation() -> rx.Component:
                 ),),
                 rx.dialog.content(
                     rx.dialog.title(
-                        "Donate XRP: Current Balance: {}",
+                        # "Donate XRP: Current Balance: {self.NGO['balance']}",
+                        f"NGO Balance: {Organisations.NGO['balance']} XRP",
                     ),
                     rx.dialog.description(
                         "How much would you like to donate?",
