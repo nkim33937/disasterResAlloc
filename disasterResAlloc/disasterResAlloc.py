@@ -18,4 +18,4 @@ app = rx.App(
 app.add_page(WalletPage, route="/wallet")
 
 # Compile the app
-app.compile()
+app._compile()
