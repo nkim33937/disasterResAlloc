@@ -8,13 +8,21 @@ from reflex.components.radix.themes.base import (
 
 class StatsState(rx.State):
     area_toggle: bool = True
-    selected_tab: str = "users"
+    selected_tab: str = "donation"
     timeframe: str = "Monthly"
     users_data = []
     revenue_data = []
     orders_data = []
     device_data = []
     yearly_device_data = []
+    donation_data = [
+        {"Date": "10-01", "Donation": 100},
+        {"Date": "10-05", "Donation": 500},
+        {"Date": "10-10", "Donation": 800},
+        {"Date": "10-15", "Donation": 200},
+        {"Date": "10-20", "Donation": 400},
+        {"Date": "10-25", "Donation": 300},
+    ]
 
     def toggle_areachart(self):
         self.area_toggle = not self.area_toggle
@@ -202,6 +210,46 @@ def revenue_chart() -> rx.Component:
         ),
     )
 
+def donation_history_chart() -> rx.Component:
+    # if not donation_data:
+    #     donation_data = [
+    #         {"Date": (datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%m-%d"), "Donation": 0}
+    #         for i in range(30, -1, -1)
+    #     ]
+
+    return rx.cond(
+        StatsState.area_toggle,
+        rx.recharts.area_chart(
+            _create_gradient("green", "colorGreen"),
+            _custom_tooltip("green"),
+            rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
+            rx.recharts.area(
+                data_key="Donation",
+                stroke=rx.color("green", 9),
+                fill="url(#colorGreen)",
+                type_="monotone",
+            ),
+            rx.recharts.x_axis(data_key="Date", scale="auto"),
+            rx.recharts.y_axis(),
+            rx.recharts.legend(),
+            data=StatsState.donation_data,
+            height=425,
+        ),
+        rx.recharts.bar_chart(
+            _custom_tooltip("green"),
+            rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
+            rx.recharts.bar(
+                data_key="Donations",
+                stroke=rx.color("green", 9),
+                fill=rx.color("green", 7),
+            ),
+            rx.recharts.x_axis(data_key="Date", scale="auto"),
+            rx.recharts.y_axis(),
+            rx.recharts.legend(),
+            data=StatsState.donation_data,
+            height=425,
+        ),
+    )
 
 def orders_chart() -> rx.Component:
     return rx.cond(
@@ -287,3 +335,28 @@ def timeframe_select() -> rx.Component:
         variant="surface",
         on_change=StatsState.set_timeframe,
     )
+
+# def charts() -> rx.Component:
+#     return rx.box(
+#         rx.tabs(
+#             rx.tab_list(
+#                 rx.tab("Donations", value="donations"),
+#                 rx.tab("Users", value="users"),
+#                 rx.tab("Revenue", value="revenue"),
+#                 rx.tab("Orders", value="orders"),
+#             ),
+#             rx.tab_panels(
+#                 rx.tab_panel(donation_history_chart(), value="donations"),
+#                 rx.tab_panel(users_chart(), value="users"),
+#                 rx.tab_panel(revenue_chart(), value="revenue"),
+#                 rx.tab_panel(orders_chart(), value="orders"),
+#             ),
+#             value=StatsState.selected_tab,
+#             on_value_change=StatsState.set_selected_tab,
+#         ),
+#         rx.hstack(
+#             area_toggle(),
+#             timeframe_select(),
+#             justify="end",
+#         ),
+#     )
